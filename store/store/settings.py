@@ -8,7 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5-d%xrjqglmgo3hmq_p6(48=v4z(9lugql(b9527%-s0j^f$1g'
+SECRET_KEY = (
+    'django-insecure-5-d%xrjqglmgo3hmq_p6(48=v4z(9lugql(b9527%-s0j^f$1g'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -111,9 +113,7 @@ STATIC_URL = '/static/'
 
 # От куда джанго будет подгружать статику.
 
-STATICFILES_DIRS = (
-    BASE_DIR / 'static',
-    )
+STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 # URL который обрабатывает медиа из media_root
 
@@ -131,3 +131,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Users
 
 AUTH_USER_MODEL = 'users.User'
+
+LOGIN_URL = '/users/login/'
