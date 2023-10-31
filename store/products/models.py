@@ -8,6 +8,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'категория'
+        verbose_name_plural = 'категории'
 
 
 class Product(models.Model):
@@ -23,6 +27,10 @@ class Product(models.Model):
 
     def __str__(self):
         return f"Товар: {self.name} | Категория: {self.category}"
+    
+    class Meta:
+        verbose_name = 'продукт'
+        verbose_name_plural = 'продукты'
 
 
 class Basket(models.Model):

@@ -3,7 +3,8 @@ from .models import Product, Category, Basket
 from users.models import User
 from django.db.models import F
 from django.contrib.auth.decorators import login_required
-
+from django.core.paginator import Paginator
+from store.settings import PER_PAGE
 
 def index(request):
     template = "products/index.html"
@@ -14,18 +15,20 @@ def index(request):
     return render(request, template, context)
 
 
-def products(request, category_id=None):
+def products(request, category_id=None, page_number=1):
     template = "products/products.html"
     title = "Каталог"
     if category_id:
         products = Product.objects.filter(category__id=category_id)
     else:
         products = Product.objects.all()
-        print(products)
+    paginator = Paginator(products, PER_PAGE)
+
+    page_obj = paginator.get_page(page_number)
     categories = Category.objects.all()
     context = {
         "title": title,
-        "products": products,
+        "products": page_obj,
         "categories": categories}
     return render(request, template, context)
 
