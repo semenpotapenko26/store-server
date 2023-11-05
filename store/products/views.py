@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, HttpResponseRedirect
 from .models import Product, Category, Basket
 from users.models import User
@@ -5,37 +6,36 @@ from django.db.models import F
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from store.settings import PER_PAGE
-
-def index(request):
-    template = "products/index.html"
-    title = "Главная страница"
-    products = Product.objects.all()
-    categories = Category.objects.all()
-    context = {"title": title, "products": products, "categories": categories}
-    return render(request, template, context)
+from django.views.generic import TemplateView, ListView
+from .mixins import TitleMixin
 
 
-def products(request, category_id=None, page_number=1):
-    template = "products/products.html"
-    title = "Каталог"
-    if category_id:
-        products = Product.objects.filter(category__id=category_id)
-    else:
-        products = Product.objects.all()
-    paginator = Paginator(products, PER_PAGE)
+class IndexView(TitleMixin, TemplateView):
+    template_name = 'products/index.html'
+    title = 'Главная страница'
 
-    page_obj = paginator.get_page(page_number)
-    categories = Category.objects.all()
-    context = {
-        "title": title,
-        "products": page_obj,
-        "categories": categories}
-    return render(request, template, context)
+class ProductsListView(TitleMixin, ListView):
+    model = Product
+    template_name = 'products/products.html'
+    context_object_name = 'products'
+    paginate_by = 3
+    title = 'Каталог'
 
+    
 
-def test(request):
-    template = "products/test.html"
-    return render(request, template)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_id = self.kwargs.get('category_id')
+        if category_id:
+            return queryset.filter(category_id=category_id)
+        else:
+            return queryset
+
 
 @login_required
 def basket_add(request, product_id):
@@ -54,3 +54,7 @@ def basket_remove(request, basket_id):
     basket = Basket.objects.get(id=basket_id)
     basket.delete()
     return HttpResponseRedirect(request.META["HTTP_REFERER"])
+
+def test(request):
+    template = "products/test.html"
+    return render(request, template)
